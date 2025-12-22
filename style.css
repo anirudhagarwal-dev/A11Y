@@ -41,6 +41,18 @@ nav {
   text-align: center;
   padding: 12px 0;
 }
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+}
+nav li {
+  display: inline;
+}
 nav a {
   color: #e8e8e8;
   margin: 0 20px;
@@ -51,6 +63,11 @@ nav a {
 nav a:hover,
 nav a:focus {
   color: #00c6ff;
+}
+nav a[aria-current="location"] {
+  color: #00c6ff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 section {
@@ -81,6 +98,13 @@ h2 {
   margin-bottom: 20px;
 }
 
+#projects h2 {
+  color: #1d4ed8;
+}
+#contact h2 {
+  color: #a855f7;
+}
+
 ul {
   list-style: square;
   padding-left: 20px;
@@ -102,6 +126,9 @@ th {
   text-align: left;
   padding: 12px;
 }
+#projects th {
+  background: #2563eb;
+}
 td {
   padding: 12px;
   border-top: 1px solid #ddd;
@@ -109,12 +136,35 @@ td {
 tr:hover {
   background: #f0f8ff;
 }
+#projects tr:hover {
+  background: #eaf3ff;
+}
 
 form {
   background: #fff;
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+#contact form {
+  border-left: 4px solid #a855f7;
+}
+.error {
+  color: #d93025;
+  font-size: 0.95rem;
+  margin-top: 4px;
+  display: block;
+}
+#formErrors {
+  background: #fff3f3;
+  color: #5c0b0b;
+  padding: 12px;
+  border-left: 4px solid #d93025;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+#formErrors:empty {
+  display: none;
 }
 label {
   font-weight: 600;
@@ -131,6 +181,10 @@ button {
   border: 1px solid #ccc;
   font-size: 1rem;
 }
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #d93025;
+}
 input:focus,
 textarea:focus {
   outline: 2px solid #0077ff;
@@ -144,8 +198,20 @@ button {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+#contact button {
+  background: #a855f7;
+}
 button:hover {
   background: #005fcc;
+}
+#contact button:hover {
+  background: #7e22ce;
+}
+button:focus {
+  background: #005fcc;
+}
+#contact button:focus {
+  background: #7e22ce;
 }
 
 footer {
@@ -158,4 +224,78 @@ footer {
 }
 #about {
   text-align: center;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #00c6ff;
+  outline-offset: 3px;
+}
+
+@media (forced-colors: active) {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+  input[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: CanvasText;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f1115;
+    color: #e6e6e6;
+  }
+  nav {
+    background: #0b0b0b;
+  }
+  section {
+    background: transparent;
+  }
+  ul {
+    color: #d0d0d0;
+  }
+  table {
+    background: #121212;
+  }
+  th {
+    background: #1f6feb;
+  }
+  #projects th {
+    background: #2563eb;
+  }
+  td {
+    border-top: 1px solid #333;
+  }
+  #projects tr:hover {
+    background: #132541;
+  }
+  footer {
+    background: #0b0b0b;
+    color: #cfcfcf;
+  }
+  #contact form {
+    background: #121212;
+  }
 }
