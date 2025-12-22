@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anirudh Agarwal | Accessible Portfolio</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="32x32">
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -23,10 +24,10 @@
     </ul>
   </nav>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <section id="about">
       <h2>About Me</h2>
-      <img src="mypic.jpg" alt="Portrait of Anirudh Agarwal" width="200" height="200">
+      <img src="mypic.jpg" alt="Portrait of Anirudh Agarwal" width="200" height="200" loading="lazy" decoding="async">
       <p>Hi I’m <strong>Anirudh Agarwal</strong> an enthusiastic B.Tech IT student passionate about turning ideas into real-world tech solutions.
 
 I'm currently focusing on web development and have applied for an internship to gain real-world experience in creating user-friendly and responsive websites. I enjoy working with HTML, CSS, JavaScript, and I'm exploring React and other modern frameworks to strengthen my frontend skills.
@@ -57,6 +58,7 @@ Let’s connect if you're into tech, open-source, internships, or just want to g
     <section id="projects">
       <h2>Projects</h2>
       <table aria-label="List of projects">
+        <caption>Projects with descriptions</caption>
         <thead>
           <tr>
             <th scope="col">Project Name</th>
@@ -64,28 +66,29 @@ Let’s connect if you're into tech, open-source, internships, or just want to g
           </tr>
         </thead>
         <tbody>
-          <tr><td>Quiz App</td><td>Interactive quiz using HTML, CSS, and JavaScript.</td></tr>
-          <tr><td>Amazon Clone</td><td>Just a front page.</td></tr>
-          <tr><td>Portfolio Website</td><td>My personal responsive website.</td></tr>
-          <tr><td>Countries Explorer</td><td>Displays country info with search options.</td></tr>
-          <tr><td>Expense Tracker</td><td>Python Project.</td></tr>
+          <tr><th scope="row">Quiz App</th><td>Interactive quiz using HTML, CSS, and JavaScript.</td></tr>
+          <tr><th scope="row">Amazon Clone</th><td>Just a front page.</td></tr>
+          <tr><th scope="row">Portfolio Website</th><td>My personal responsive website.</td></tr>
+          <tr><th scope="row">Countries Explorer</th><td>Displays country info with search options.</td></tr>
+          <tr><th scope="row">Expense Tracker</th><td>Python Project.</td></tr>
         </tbody>
       </table>
     </section>
 
     <section id="contact">
       <h2>Contact Me</h2>
+      <div id="formErrors" role="alert" aria-live="assertive" tabindex="-1"></div>
       <form onsubmit="return showMessage()" aria-describedby="formDesc">
         <p id="formDesc">All fields are required. Use Tab to move between fields.</p>
 
         <label for="name">Your Name:</label>
-        <input type="text" id="name" name="name" required aria-required="true">
+        <input type="text" id="name" name="name" required aria-required="true" autocomplete="name">
 
         <label for="email">Your Email:</label>
-        <input type="email" id="email" name="email" required aria-required="true">
+        <input type="email" id="email" name="email" required aria-required="true" autocomplete="email">
 
         <label for="message">Your Message:</label>
-        <textarea id="message" name="message" rows="3" required aria-required="true"></textarea>
+        <textarea id="message" name="message" rows="3" required aria-required="true" autocomplete="off"></textarea>
 
         <button type="submit">Send</button>
       </form>
@@ -100,10 +103,73 @@ Let’s connect if you're into tech, open-source, internships, or just want to g
 
   <script>
     function showMessage() {
+      const name = document.getElementById("name");
+      const email = document.getElementById("email");
+      const message = document.getElementById("message");
+      const errors = document.getElementById("formErrors");
+      errors.innerHTML = "";
+      [name, email, message].forEach(f => {
+        f.removeAttribute("aria-invalid");
+        const prev = document.getElementById(f.id + "-error");
+        if (prev) prev.remove();
+      });
+      const msgs = [];
+      function setError(field, msg) {
+        field.setAttribute("aria-invalid", "true");
+        const span = document.createElement("span");
+        span.id = field.id + "-error";
+        span.className = "error";
+        span.textContent = msg;
+        span.setAttribute("aria-live", "polite");
+        const existingDesc = field.getAttribute("aria-describedby");
+        field.setAttribute(
+          "aria-describedby",
+          existingDesc ? existingDesc + " " + span.id : span.id
+        );
+        field.insertAdjacentElement("afterend", span);
+        msgs.push(msg);
+      }
+      if (!name.value.trim()) setError(name, "Please enter your name.");
+      if (!email.validity.valid) setError(email, "Please enter a valid email address.");
+      if (!message.value.trim()) setError(message, "Please enter a message.");
+      if (msgs.length) {
+        const list = document.createElement("ul");
+        msgs.forEach(m => {
+          const li = document.createElement("li");
+          li.textContent = m;
+          list.appendChild(li);
+        });
+        errors.appendChild(list);
+        errors.focus();
+        return false;
+      }
       const feedback = document.getElementById("feedback");
       feedback.textContent = "Thanks for your message! I’ll get back to you soon.";
       return false;
     }
+    const sections = document.querySelectorAll("main section");
+    const navLinks = Array.from(document.querySelectorAll("nav a"));
+    function setCurrent(id) {
+      navLinks.forEach(a => {
+        if (a.getAttribute("href") === `#${id}`) {
+          a.setAttribute("aria-current", "location");
+        } else {
+          a.removeAttribute("aria-current");
+        }
+      });
+    }
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) setCurrent(visible.target.id);
+    }, { rootMargin: "0px 0px -50% 0px", threshold: [0.25, 0.5, 0.75, 1] });
+    sections.forEach(s => observer.observe(s));
+    const skipLink = document.querySelector(".skip-link");
+    skipLink.addEventListener("click", () => {
+      const main = document.getElementById("main");
+      main.focus();
+    });
   </script>
 </body>
 </html>
